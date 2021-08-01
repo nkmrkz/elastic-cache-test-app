@@ -8,7 +8,7 @@ const main = async () => {
     console.log("GET /");
     console.log(req.headers.host);
     if (!req.headers.host) throw new Error();
-    const subDomain = req.headers.host.match(/(.*)\.localhost\.com/) || [
+    const subDomain = req.headers.host.match(/(.*)\.tech-nkmr\.com/) || [
       req.headers.host,
       "",
     ];
