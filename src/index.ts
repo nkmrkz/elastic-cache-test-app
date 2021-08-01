@@ -24,11 +24,11 @@ const main = async () => {
       ];
 
       // Get conmanyId from company management table.
-      //const { id } = await this.companyRepository.find({ userId, subDomain });
-      const id = subDomain;
+      //const { id } = await this.companyRepository.find({ userId, subDomain[1] });
+      const id = subDomain[1];
 
       // Set userId and companyId into Response object.
-      res.locals.userInfo = { userId, companyId: id };
+      res.locals.userInfo = { userId, companyId: id, subDomain: subDomain[1] };
       next();
     } catch (err) {
       console.error(err);
@@ -42,7 +42,7 @@ const main = async () => {
       Some Implementations.
     */
     console.log("END /");
-    res.send("サブドメイン：" + res.locals.userInfo.companyId);
+    res.send("サブドメイン：" + res.locals.userInfo.subDomain);
   });
 
   // サーバ起動
