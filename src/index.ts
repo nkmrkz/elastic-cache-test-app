@@ -1,31 +1,47 @@
 import express from "express";
+// import "reflect-metadata";
+// import { getConnectionOptions, createConnection } from "typeorm";
 
 const main = async () => {
+  // // TypeORMの設定
+  // const connectionOptions = await getConnectionOptions();
+  // await createConnection(connectionOptions);
+
   // expressの設定
   const app = express();
 
-  app.get("/", (req, res) => {
-    console.log("GET /");
-    console.log(req.headers.host);
-    if (!req.headers.host) throw new Error();
-    const subDomain = req.headers.host.match(/(.*)\.tech-nkmr\.com/) || [
-      req.headers.host,
-      "",
-    ];
-    console.log("subDomain: ", subDomain[1]);
-    console.log("END /");
-    res.send("サブドメイン：" + subDomain[1]);
+  app.use((req, res, next) => {
+    try {
+      // Get UserInfo from JWT(省略)
+      const userId = "xxxxxxxx";
+
+      // Get subdomain.
+      if (!req.headers.host) throw new Error();
+      const subDomain = req.headers.host.match(/(.*)\.tech-nkmr\.com/) || [
+        req.headers.host,
+        "",
+      ];
+
+      // Get conmanyId from company management table.
+      //const { id } = await this.companyRepository.find({ userId, subDomain });
+      const id = subDomain;
+
+      // Set userId and companyId into Response object.
+      res.locals.userInfo = { userId, companyId: id };
+      next();
+    } catch (err) {
+      console.error(err);
+      res.status(403).send();
+    }
   });
 
-  app.get("/wildcard", (req, res) => {
+  app.get("/", (req, res) => {
     console.log("GET /");
-    // const subDomain = req.headers.host
-    //   ? req.headers.host.match(/(.*)\.localhost\.com/)
-    //   : undefined;
-    // if (!subDomain) throw new Error();
-    // console.log("subDomain: ", subDomain[1]);
+    /*
+      Some Implementations.
+    */
     console.log("END /");
-    res.send(req.headers.host);
+    res.send("サブドメイン：" + res.locals.userInfo.companyId);
   });
 
   // サーバ起動
