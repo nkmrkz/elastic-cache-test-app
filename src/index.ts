@@ -6,10 +6,14 @@ const main = async () => {
 
   app.get("/", (req, res) => {
     console.log("GET /");
-    const subDomain = req.headers.host.match(/([a-z]{1,})\.nkmr-kz\.com)/);
-    console.log("subDomain: ", subDomain);
+    console.log(req.headers.host);
+    const subDomain = req.headers.host
+      ? req.headers.host.match(/(.*)\.localhost\.com/)
+      : undefined;
+    if (!subDomain) throw new Error();
+    console.log("subDomain: ", subDomain[1]);
     console.log("END /");
-    res.send("Hello");
+    res.send("サブドメイン：" + subDomain[1]);
   });
 
   // サーバ起動
