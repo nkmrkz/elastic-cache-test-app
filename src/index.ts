@@ -6,7 +6,7 @@ const main = async () => {
 
   app.get("/", (req, res) => {
     console.log("GET /");
-    console.log(req.hostname);
+    console.log(req.headers.host);
     console.log("END /");
     res.send("Hello");
   });
