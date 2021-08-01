@@ -17,6 +17,7 @@ const main = async () => {
 
       // Get subdomain.
       if (!req.headers.host) throw new Error();
+      if (req.headers.host.startsWith("192.168")) res.sendStatus(200); // For HealthCheck（temporary）
       const subDomain = req.headers.host.match(/(.*)\.tech-nkmr\.com/) || [
         req.headers.host,
         "",
