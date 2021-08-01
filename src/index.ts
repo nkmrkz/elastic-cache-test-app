@@ -6,7 +6,8 @@ const main = async () => {
 
   app.get("/", (req, res) => {
     console.log("GET /");
-    console.log(req.headers.host);
+    const subDomain = req.headers.host.match(/([a-z]{1,})\.nkmr-kz\.com)/);
+    console.log("subDomain: ", subDomain);
     console.log("END /");
     res.send("Hello");
   });
