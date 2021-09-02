@@ -1,52 +1,38 @@
-import express from "express";
-// import "reflect-metadata";
-// import { getConnectionOptions, createConnection } from "typeorm";
+import express, { Request, Response } from "express";
+import { logger } from "../config";
+import { query, validationResult } from "express-validator";
+
+const port = 3000;
+
+// 指定したミリ秒で待機する関数
+const sleep = (waitMsec: number): void => {
+  const startMsec = new Date();
+  while (new Date().getTime() - startMsec.getTime() < waitMsec);
+  return;
+};
 
 const main = async () => {
-  // // TypeORMの設定
-  // const connectionOptions = await getConnectionOptions();
-  // await createConnection(connectionOptions);
-
   // expressの設定
   const app = express();
 
-  app.use((req, res, next) => {
-    try {
-      // Get UserInfo from JWT(省略)
-      const userId = "xxxxxxxx";
-
-      // Get subdomain.
-      if (!req.headers.host) throw new Error();
-      if (req.headers.host.startsWith("192.168")) return res.sendStatus(200); // For HealthCheck（temporary）
-      const subDomain = req.headers.host.match(/(.*)\.tech-nkmr\.com/) || [
-        req.headers.host,
-        "",
-      ];
-
-      // Get conmanyId from company management table.
-      //const { id } = await this.companyRepository.find({ userId, subDomain[1] });
-      const id = subDomain[1];
-
-      // Set userId and companyId into Response object.
-      res.locals.userInfo = { userId, companyId: id, subDomain: subDomain[1] };
-      next();
-    } catch (err) {
-      console.error(err);
-      res.status(403).send();
+  app.get(
+    "/time",
+    query("mseq").isInt().not().isEmpty(),
+    async (req: Request, res: Response) => {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        logger.error("validation error");
+        return res.status(422).json({ errors: errors.array() });
+      }
+      const startDateTime = new Date().getTime();
+      sleep(Number(req.query.mseq));
+      res.send("time");
+      logger.info(`access time: ${new Date().getTime() - startDateTime}`);
     }
-  });
-
-  app.get("/", (req, res) => {
-    console.log("GET /");
-    /*
-      Some Implementations.
-    */
-    console.log("END /");
-    res.send("サブドメイン：" + res.locals.userInfo.subDomain);
-  });
+  );
 
   // サーバ起動
-  app.listen(3000, () => console.log(`app running`));
+  app.listen(port, () => console.log(`app running!!`));
 };
 
 main();
